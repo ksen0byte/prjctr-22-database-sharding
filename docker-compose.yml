@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  postgresql-b:  # Coordinator Node
+    image: citusdata/citus:latest
+    hostname: coordinator
+    environment:
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      # - ./sql/01_setup_cluster.sh:/docker-entrypoint-initdb.d/01_setup_cluster.sh
+      - ./sql/02_init.sql:/docker-entrypoint-initdb.d/02_init.sql
+
+  postgresql-b1:  # Worker Node 1
+    image: citusdata/citus:latest
+    hostname: worker1
+    environment:
+      POSTGRES_PASSWORD: yourpassword
+    depends_on:
+      - postgresql-b
+
+  postgresql-b2:  # Worker Node 2
+    image: citusdata/citus:latest
+    hostname: worker2
+    environment:
+      POSTGRES_PASSWORD: yourpassword
+    depends_on:
+      - postgresql-b
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
